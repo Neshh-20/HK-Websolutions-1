@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="700" viewBox="0 0 1200 700">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b1220"/>
+      <stop offset="0.5" stop-color="#070b14"/>
+      <stop offset="1" stop-color="#0a1020"/>
+    </linearGradient>
+    <radialGradient id="r1" cx="30%" cy="20%" r="70%">
+      <stop offset="0" stop-color="#4f46e5" stop-opacity="0.45"/>
+      <stop offset="1" stop-color="#4f46e5" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="r2" cx="78%" cy="25%" r="70%">
+      <stop offset="0" stop-color="#06b6d4" stop-opacity="0.40"/>
+      <stop offset="1" stop-color="#06b6d4" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="r3" cx="55%" cy="90%" r="70%">
+      <stop offset="0" stop-color="#22c55e" stop-opacity="0.18"/>
+      <stop offset="1" stop-color="#22c55e" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="stroke" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#06b6d4" stop-opacity="0.65"/>
+      <stop offset="1" stop-color="#4f46e5" stop-opacity="0.65"/>
+    </linearGradient>
+    <filter id="blur" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="22"/>
+    </filter>
+  </defs>
+
+  <rect width="1200" height="700" fill="url(#bg)"/>
+  <rect width="1200" height="700" fill="url(#r1)"/>
+  <rect width="1200" height="700" fill="url(#r2)"/>
+  <rect width="1200" height="700" fill="url(#r3)"/>
+
+  <g filter="url(#blur)">
+    <circle cx="250" cy="180" r="130" fill="#4f46e5" fill-opacity="0.25"/>
+    <circle cx="930" cy="210" r="150" fill="#06b6d4" fill-opacity="0.22"/>
+    <circle cx="700" cy="560" r="190" fill="#22c55e" fill-opacity="0.10"/>
+  </g>
+
+  <g opacity="0.18" stroke="rgba(255,255,255,0.28)">
+    <path d="M0 140H1200M0 280H1200M0 420H1200M0 560H1200" />
+    <path d="M200 0V700M400 0V700M600 0V700M800 0V700M1000 0V700" />
+  </g>
+
+  <g fill="none" stroke="url(#stroke)" stroke-width="2" opacity="0.75">
+    <path d="M180 520c120-170 280-260 480-270 210-10 360 70 470 210" />
+    <path d="M140 470c160-220 350-320 570-330 240-10 410 90 520 260" opacity="0.5"/>
+  </g>
+
+  <g>
+    <circle cx="430" cy="250" r="6" fill="#06b6d4" fill-opacity="0.9"/>
+    <circle cx="610" cy="240" r="5" fill="#4f46e5" fill-opacity="0.9"/>
+    <circle cx="820" cy="330" r="6" fill="#22c55e" fill-opacity="0.8"/>
+    <circle cx="520" cy="460" r="5" fill="#06b6d4" fill-opacity="0.85"/>
+  </g>
+</svg>
