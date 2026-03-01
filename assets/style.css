@@ -19,6 +19,7 @@
 
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
+
 body{
   margin:0;
   font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
@@ -29,12 +30,25 @@ body{
     radial-gradient(900px 650px at 60% 90%, rgba(74,222,128,.18), transparent 65%),
     linear-gradient(180deg, #050a08 0%, #070f0c 55%, #060b09 100%);
   overflow-x:hidden;
+
+  /* BFCache-safe: body is ALWAYS visible by default */
+  opacity: 1;
+  transform: none;
 }
 
-/* Page transition */
-body{opacity:0; transform: translateY(8px); transition: opacity .22s ease, transform .22s ease;}
-body.page-in{opacity:1; transform: translateY(0);}
-body.page-out{opacity:0; transform: translateY(10px);}
+/* Page transitions (safe for back button) */
+body.animate-in{
+  animation: pageIn .22s ease both;
+}
+@keyframes pageIn{
+  from{opacity:0; transform: translateY(8px);}
+  to{opacity:1; transform: translateY(0);}
+}
+body.animate-out{
+  opacity:0;
+  transform: translateY(10px);
+  transition: opacity .20s ease, transform .20s ease;
+}
 
 a{color:inherit; text-decoration:none}
 .container{width:min(1100px, 92vw); margin-inline:auto}
@@ -180,7 +194,7 @@ h1{
   background: linear-gradient(135deg, var(--g1), var(--g3));
 }
 
-/* ✅ Hero visual FIX (das hat dir gefehlt) */
+/* Hero visual */
 .heroVisual{
   position:relative;
   min-height: 420px;
