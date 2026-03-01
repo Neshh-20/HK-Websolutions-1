@@ -128,3 +128,26 @@ form?.addEventListener("submit", async (e) => {
     }
   }
 });
+
+// =========================
+// COOKIE BANNER LOGIC
+// =========================
+const cookieBanner = document.getElementById("cookieBanner");
+const acceptBtn = document.getElementById("acceptCookies");
+const declineBtn = document.getElementById("declineCookies");
+
+const cookieChoice = localStorage.getItem("cookieConsent");
+
+if (!cookieChoice && cookieBanner) {
+  cookieBanner.style.display = "block";
+}
+
+acceptBtn?.addEventListener("click", () => {
+  localStorage.setItem("cookieConsent", "accepted");
+  cookieBanner.style.display = "none";
+});
+
+declineBtn?.addEventListener("click", () => {
+  localStorage.setItem("cookieConsent", "declined");
+  cookieBanner.style.display = "none";
+});
