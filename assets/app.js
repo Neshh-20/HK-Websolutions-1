@@ -1,6 +1,19 @@
-// ===== Page transition (fade/slide in/out) =====
+// ---------- Helpers ----------
+function playInAnimation() {
+  const wrap = document.getElementById("pageWrap") || document.body;
+
+  // restart animation safely (also for BFCache)
+  wrap.classList.remove("animate-out");
+  wrap.classList.remove("animate-in");
+  requestAnimationFrame(() => {
+    wrap.classList.add("animate-in");
+  });
+}
+
+// ---------- Always show page on load & back/forward ----------
 document.addEventListener("DOMContentLoaded", () => {
-  document.body.classList.add("page-in");
+  playInAnimation();
+
   const year = document.querySelector("#year");
   if (year) year.textContent = new Date().getFullYear();
 
@@ -11,32 +24,36 @@ document.addEventListener("DOMContentLoaded", () => {
   if (paket && interestSelect) {
     interestSelect.value = paket;
   }
+
+  // =========================
+  // COOKIE BANNER LOGIC (SAFE)
+  // =========================
+  const cookieBanner = document.getElementById("cookieBanner");
+  const acceptBtn = document.getElementById("acceptCookies");
+  const declineBtn = document.getElementById("declineCookies");
+
+  if (cookieBanner) {
+    const cookieChoice = localStorage.getItem("cookieConsent");
+    if (!cookieChoice) cookieBanner.style.display = "block";
+
+    acceptBtn?.addEventListener("click", () => {
+      localStorage.setItem("cookieConsent", "accepted");
+      cookieBanner.style.display = "none";
+    });
+
+    declineBtn?.addEventListener("click", () => {
+      localStorage.setItem("cookieConsent", "declined");
+      cookieBanner.style.display = "none";
+    });
+  }
 });
 
-// Intercept internal nav links for animated page transitions
-document.addEventListener("click", (e) => {
-  const a = e.target.closest("a");
-  if (!a) return;
-
-  const href = a.getAttribute("href");
-  if (!href) return;
-
-  // ignore anchor links, mailto, tel, external
-  const isExternal = href.startsWith("http");
-  const isAnchor = href.startsWith("#");
-  const isMailOrTel = href.startsWith("mailto:") || href.startsWith("tel:");
-  if (isExternal || isAnchor || isMailOrTel) return;
-
-  e.preventDefault();
-  document.body.classList.remove("page-in");
-  document.body.classList.add("page-out");
-
-  setTimeout(() => {
-    window.location.href = href;
-  }, 220);
+// BFCache fix: triggers on back/forward navigation too
+window.addEventListener("pageshow", () => {
+  playInAnimation();
 });
 
-// ===== Mobile nav =====
+// ---------- Mobile nav ----------
 const burger = document.querySelector(".burger");
 const mobileNav = document.querySelector("#mobileNav");
 
@@ -54,7 +71,40 @@ mobileNav?.querySelectorAll("a").forEach((a) => {
   a.addEventListener("click", closeMobileNav);
 });
 
-// ===== Netlify form async submit + "Anfrage gesendet" =====
+// ---------- Animated navigation (no new bugs) ----------
+document.addEventListener("click", (e) => {
+  const a = e.target.closest("a");
+  if (!a) return;
+
+  const href = a.getAttribute("href");
+  if (!href) return;
+
+  // allow normal behavior for anchors, external, mailto, tel, downloads, new tab
+  const isAnchor = href.startsWith("#");
+  const isMailOrTel = href.startsWith("mailto:") || href.startsWith("tel:");
+  const isExternal = href.startsWith("http");
+  const isDownload = a.hasAttribute("download");
+  const newTab = a.getAttribute("target") === "_blank";
+  if (isAnchor || isMailOrTel || isExternal || isDownload || newTab) return;
+
+  // If same page link (rare), do nothing
+  const current = window.location.pathname.split("/").pop() || "index.html";
+  if (href === current) return;
+
+  // animated out, then navigate
+  e.preventDefault();
+  closeMobileNav();
+
+  const wrap = document.getElementById("pageWrap") || document.body;
+  wrap.classList.remove("animate-in");
+  wrap.classList.add("animate-out");
+
+  setTimeout(() => {
+    window.location.href = href;
+  }, 200);
+});
+
+// ---------- Netlify form async submit + status ----------
 const form = document.querySelector("#offerForm");
 const statusEl = document.querySelector("#formStatus");
 const submitBtn = document.querySelector("#submitBtn");
@@ -68,17 +118,16 @@ function encode(data) {
 form?.addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  if (!statusEl || !submitBtn) return;
-
-  statusEl.textContent = "";
-  submitBtn.disabled = true;
-  submitBtn.textContent = "Sende…";
+  if (statusEl) statusEl.textContent = "";
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Sende…";
+  }
 
   try {
     const formData = new FormData(form);
     const data = Object.fromEntries(formData.entries());
 
-    // Netlify needs POST to root path
     const res = await fetch("/", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -88,13 +137,19 @@ form?.addEventListener("submit", async (e) => {
     if (!res.ok) throw new Error("Network response was not ok");
 
     form.reset();
-    statusEl.textContent = "✅ Anfrage gesendet";
-    statusEl.style.color = "rgba(34,197,94,.95)";
+    if (statusEl) {
+      statusEl.textContent = "✅ Anfrage gesendet";
+      statusEl.style.color = "rgba(74,222,128,.95)";
+    }
   } catch (err) {
-    statusEl.textContent = "❌ Konnte nicht gesendet werden. Bitte später erneut versuchen.";
-    statusEl.style.color = "rgba(239,68,68,.95)";
+    if (statusEl) {
+      statusEl.textContent = "❌ Konnte nicht gesendet werden. Bitte später erneut versuchen.";
+      statusEl.style.color = "rgba(239,68,68,.95)";
+    }
   } finally {
-    submitBtn.disabled = false;
-    submitBtn.textContent = "Anfrage senden";
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Anfrage senden";
+    }
   }
 });
